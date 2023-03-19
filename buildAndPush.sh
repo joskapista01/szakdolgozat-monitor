@@ -4,5 +4,5 @@ docker build . -t docker.io/jozseftorocsik/szakdolgozat-monitor --no-cache
 docker push docker.io/jozseftorocsik/szakdolgozat-monitor
 
 
-#helm uninstall api -n apps
-#helm install api ./helm/api -n apps
+helm uninstall monitor -n apps
+helm install monitor ./helm/monitor -n apps
