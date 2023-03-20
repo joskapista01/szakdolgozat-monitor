@@ -27,7 +27,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           push: true
-          tags: jozseftorocsik/szakdolgozat-api:latest
+          tags: jozseftorocsik/szakdolgozat-monitor:latest
       
       - uses: actions/checkout@master
       
