@@ -51,6 +51,7 @@ def getServerInfo(serverHostname, serverPort):
 
     with socket.socket() as client:
         try:
+            print(server_addr)
             client.connect(server_addr)
             print('Connected')
             client.sendall(handshake_packet)
