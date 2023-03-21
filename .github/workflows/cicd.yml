@@ -30,11 +30,30 @@ jobs:
           tags: jozseftorocsik/szakdolgozat-monitor:latest
       
       - uses: actions/checkout@master
+        with:
+          fetch-depth: 0
       
+      - name: 'Set build id'
+        id: build_id
+        # add a step output `steps.build_id.outputs.id` as the unique id
+        run: echo "::set-output name=id::$(date +%s)"
+      
+      - name: Update build number
+        run: |
+          sed -i "/buildVersion:*/c\buildVersion: ${BUILD_ID}" helm/monitor/values.yaml
+        env:
+          BUILD_ID: ${{ steps.build_id.outputs.id }}
+          
+      - name: Commit & Push changes
+        uses: actions-js/push@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: development
+          
       - name: Merge development -> main
         uses: devmasx/merge-branch@master
         with:
           type: now
           from_branch: development
           target_branch: main
-          github_token: ${{ secrets.GIT_TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
