@@ -2,7 +2,7 @@ import socket
 import json
 from flask import Flask, request
 
-socket.setdefaulttimeout(1)
+socket.setdefaulttimeout(0.1)
 
 app = Flask(__name__)
 
