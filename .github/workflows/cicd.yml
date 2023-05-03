@@ -40,7 +40,7 @@ jobs:
       - name: 'Set build id'
         id: build_id
         # add a step output `steps.build_id.outputs.id` as the unique id
-        run: echo "::set-output name=id::$(date +%s)"
+        run: echo "id=$(date +%s)" >> $GITHUB_OUTPUT
       
       - name: Update build number
         run: |
