@@ -16,6 +16,7 @@ def getServerInfoRequest():
     else:
         return {"error": "Request must be json!"}
 
+# converts an integer into a series if bytes representing the integer in VarInt format
 def toVarIntBytes(number):
     numbers = b''
     while(number > 127):
@@ -39,29 +40,30 @@ def getServerInfo(serverHostname, serverPort):
 
     server_hostname_length = len(serverHostname)
 
+    # the packet sent to the minecraft server for handshaking
     handshake_packet = b''
     handshake_packet += toVarIntBytes(HANDSHAKE_PACKET_ID) + toVarIntBytes(PROTOCOL_VERSION) + toVarIntBytes(server_hostname_length) + bytes(serverHostname,"utf-8") + serverPort.to_bytes(2,"little")+ toVarIntBytes(HANDSHAKE_REQUEST_ENUM)
     handshake_packet_size = len(handshake_packet)
     handshake_packet = toVarIntBytes(handshake_packet_size) + handshake_packet
 
+    # the status request packet we send to the server immediately after the handshake packet
     status_request_packet = b''
     status_request_packet+= toVarIntBytes(STATUS_REQUEST_PACKET_ID)
     status_request_packet_size = len(status_request_packet)
     status_request_packet = toVarIntBytes(status_request_packet_size) + status_request_packet
 
     with socket.socket() as client:
+        # try to establish tcp connection with the server recieved in the request parameters
         try:
-            print(server_addr)
             client.connect(server_addr)
-            print('Connected')
+            # send tha handshake and the status request packets
             client.sendall(handshake_packet)
-            print('Handshake sent')
             client.sendall(status_request_packet)
-            print('Status request sent')
             handshake_response = client.recv(8192)
             
 
             if b'"online"' in handshake_response:
+                # get the player count from the response
                 player_count = handshake_response.split(b'"online":')[1].split(b'}')[0].split(b',')[0].decode()
                 return {
                     "alive": True,
@@ -70,7 +72,7 @@ def getServerInfo(serverHostname, serverPort):
             return {
                 "alive": False
             }
-
+        # if we can't establish connection, we assume that the server is offline
         except:
             return {
                 "alive": False
